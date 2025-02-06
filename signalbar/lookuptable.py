@@ -1,4 +1,4 @@
-from .signals import Signal, Symbol
+from .signals import Symbol
 
 _lookup_raw = [
     [
@@ -72,4 +72,3 @@ SIGNALBAR_VALUES = [
 ]
 SIGNALBAR_START = Symbol("220")
 SIGNALBAR_END = Symbol("222")
-

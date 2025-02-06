@@ -41,31 +41,36 @@ def encode_frame(msg: bytes)  -> Generator[Signal, None, None]:
     # Include frame footer
     yield from SIGNALBAR_END.values
 
-def decode_bytes(msg: Iterable[Signal], last_value: Signal) -> Generator[Tuple[int, Signal], None, None]:
+def decode_bytes(msg: Iterable[Signal], last_value: Signal) \
+    -> Generator[Tuple[int, Signal], None, None]:
     while True:
         try:
             symbol1 = Symbol((next(msg),next(msg),next(msg)))
-        except StopIteration:
-            raise DecodingError("Byte contained the incorrect number of trits.")
+        except StopIteration as exc:
+            raise DecodingError("Byte contained the incorrect number of trits.") from exc
         logger.debug("%s", symbol1)
         if symbol1 == SIGNALBAR_END:
             logger.debug("Done decoding.")
             return
         try:
             nibble1 = SIGNALBAR_VALUES[last_value.value][symbol1]
-        except KeyError:
-            raise DecodingError(f"Encountered invalid symbol {symbol2} with last signal {last_value}.")
+        except KeyError as exc:
+            raise DecodingError(
+                f"Encountered invalid symbol {symbol2} with last signal {last_value}.",
+            ) from exc
         try:
             symbol2 = Symbol((next(msg),next(msg),next(msg)))
-        except StopIteration:
-            raise DecodingError("Byte contained the incorrect number of trits.")
+        except StopIteration as exc:
+            raise DecodingError("Byte contained the incorrect number of trits.") from exc
         logger.debug("%s", symbol2)
         if symbol2 == SIGNALBAR_END:
             raise DecodingError("Byte contained the incorrect number of trits.")
         try:
             nibble2 = SIGNALBAR_VALUES[symbol1.values[-1].value][symbol2]
-        except KeyError:
-            raise DecodingError(f"Encountered invalid symbol {symbol2} with last signal {last_value}.")
+        except KeyError as exc:
+            raise DecodingError(
+                f"Encountered invalid symbol {symbol2} with last signal {last_value}."
+            ) from exc
         yield (nibble1<<4 | nibble2, symbol1.values[-1])
 
 
@@ -85,8 +90,6 @@ def decode_frame(msg: Iterable[Signal]) -> Generator[int]:
         try:
             initial_trits.pop(0)
             initial_trits.append(next(msg))
-        except StopIteration:
-            raise FramingError("Unable to find start sequence!")
+        except StopIteration as exc:
+            raise FramingError("Unable to find start sequence!") from exc
     return decode_data(msg, Signal.LOW)
-
-

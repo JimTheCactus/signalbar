@@ -10,23 +10,21 @@ class Signal(Enum):
     def get_char(value: "Signal"):
         if value == Signal.LOW:
             return "▖"
-        elif value == Signal.HIGH:
+        if value == Signal.HIGH:
             return "▘"
-        elif value == Signal.BAR:
+        if value == Signal.BAR:
             return "▌"
-        else:
-            raise ValueError("Unexpected signal value")
+        raise ValueError("Unexpected signal value")
 
     @staticmethod
     def from_char(value: str):
         if value == "▖":
             return Signal.LOW
-        elif value == "▘":
+        if value == "▘":
             return Signal.HIGH
-        elif value == "▌":
+        if value == "▌":
             return Signal.BAR
-        else:
-            raise ValueError("Unexpected signal character")
+        raise ValueError("Unexpected signal character")
 
     def __str__(self):
         return Signal.get_char(self)
