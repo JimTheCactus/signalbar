@@ -24,28 +24,13 @@ for some of the seed ideas an initial implementation motivation.
 
 ### Symbols
 
-#### 3-bits-to-2 trit
-
-This encoding has an efficiency of 88.8%
-
-* 0: 000 00
-* 1: 001 01
-* 2: 010 02
-* 3: 011 10
-* 4: 100 11
-* 5: 101 12
-* 6: 110 20
-* 7: 111 21
-* 8: N/A 22 - Control symbol
-
-#### 4-bits-to-3 trit
-NANA 22X - Control
-Rightside up:  ▌▌▖<data> ▌▌▌
-Upside down:   ▌▌▌<data> ▘▌▌
-Mirrored:      ▌▌▌<data> ▖▌▌
-Rotate+Mirror: ▌▌▘<data> ▌▌▌
-
-The very first symbol assumes 0 as the trailing character
+Data is encoded using 4 bits to 3 trits. A double 2 indicates a control message and should never
+appear in encoded data. The symbols have been selected to guarantee a maximum run length of a
+single symbol of 5. The presence of a 6 symbol run is sufficient to know that the message is
+corrupt. Also, since the trailing signal of the previous symbol dictates the next symbol, if
+an error in decoding has occured, there is a chance that invalid symbols can be encountered. As
+such, if an invalid symbol is encountered, the message can be known to be corrupted before that
+point in the decoding.
 
 Trailing Character 0
     NRUN 000
@@ -134,3 +119,16 @@ Trailing Character 2
     CTRL 221
     NRUN 222 - If uninitialized: Flip Horizontal, Restart. Else: End of Sequence
 
+### Frames
+
+Frames always begin with a 220 sequence and end with a 222 sequence. The very first symbol in the
+data assumes that the trailing character of the previous symbol was a 0, which following a 220
+start-of-frame sequence is correct.
+
+The choice of control symbols is to make it possible to decode signalbar in any orientation, and
+also in mirrored conditions.
+
+Rightside up:  ▌▌▖<data> ▌▌▌
+Upside down:   ▌▌▌<data> ▘▌▌
+Mirrored:      ▌▌▌<data> ▖▌▌
+Rotate+Mirror: ▌▌▘<data> ▌▌▌
