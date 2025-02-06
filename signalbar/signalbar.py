@@ -6,6 +6,15 @@ import logging
 from .signals import Signal, Symbol
 from .lookuptable import SIGNALBAR_SYMBOLS, SIGNALBAR_VALUES, SIGNALBAR_START, SIGNALBAR_END
 
+class FramingError(ValueError):
+    """ The framing of the message was incorrect """
+
+class DecodingError(ValueError):
+    """ The data contained information that could not be decoded correctly """
+
+class EndOfMessage(StopIteration):
+    """ The end of the message was reached """
+
 logger = logging.getLogger(__name__)
 
 def encode_nibble(nibble: int, last_value: Signal) -> Symbol:
@@ -32,25 +41,31 @@ def encode_frame(msg: bytes)  -> Generator[Signal, None, None]:
     # Include frame footer
     yield from SIGNALBAR_END.values
 
-class FramingError(ValueError):
-    """ The framing of the message was incorrect """
-
-class EndOfMessage(StopIteration):
-    """ The end of the message was reached """
-
 def decode_bytes(msg: Iterable[Signal], last_value: Signal) -> Generator[Tuple[int, Signal], None, None]:
     while True:
-        symbol1 = Symbol([next(msg),next(msg),next(msg)])
+        try:
+            symbol1 = Symbol((next(msg),next(msg),next(msg)))
+        except StopIteration:
+            raise DecodingError("Byte contained the incorrect number of trits.")
         logger.debug("%s", symbol1)
         if symbol1 == SIGNALBAR_END:
             logger.debug("Done decoding.")
             return
-        nibble1 = SIGNALBAR_VALUES[last_value.value][symbol1]
-        symbol2 = Symbol([next(msg),next(msg),next(msg)])
+        try:
+            nibble1 = SIGNALBAR_VALUES[last_value.value][symbol1]
+        except KeyError:
+            raise DecodingError(f"Encountered invalid symbol {symbol2} with last signal {last_value}.")
+        try:
+            symbol2 = Symbol((next(msg),next(msg),next(msg)))
+        except StopIteration:
+            raise DecodingError("Byte contained the incorrect number of trits.")
         logger.debug("%s", symbol2)
         if symbol2 == SIGNALBAR_END:
-            raise ValueError("Byte alignment error!")
-        nibble2 = SIGNALBAR_VALUES[symbol1.values[-1].value][symbol2]
+            raise DecodingError("Byte contained the incorrect number of trits.")
+        try:
+            nibble2 = SIGNALBAR_VALUES[symbol1.values[-1].value][symbol2]
+        except KeyError:
+            raise DecodingError(f"Encountered invalid symbol {symbol2} with last signal {last_value}.")
         yield (nibble1<<4 | nibble2, symbol1.values[-1])
 
 
@@ -62,9 +77,16 @@ def decode_data(msg: Iterable[Signal], initial_last_value: Signal):
         yield data[0]
 
 def decode_frame(msg: Iterable[Signal]) -> Generator[int]:
-    symbol = Symbol([next(msg),next(msg),next(msg)])
-    if symbol != SIGNALBAR_START:
-        raise FramingError("Bad start squence")
+    initial_trits = [next(msg),next(msg),next(msg)]
+    while True:
+        symbol = Symbol(initial_trits)
+        if symbol == SIGNALBAR_START:
+            break
+        try:
+            initial_trits.pop(0)
+            initial_trits.append(next(msg))
+        except StopIteration:
+            raise FramingError("Unable to find start sequence!")
     return decode_data(msg, Signal.LOW)
 
 

@@ -32,6 +32,8 @@ an error in decoding has occured, there is a chance that invalid symbols can be 
 such, if an invalid symbol is encountered, the message can be known to be corrupted before that
 point in the decoding.
 
+The symbol table below show most significant bit/most significant trit.
+
 ```
 Trailing Character 0
     NRUN 000
@@ -136,3 +138,7 @@ Upside down:   ▌▌▌<data> ▘▌▌
 Mirrored:      ▌▌▌<data> ▖▌▌
 Rotate+Mirror: ▌▌▘<data> ▌▌▌
 ```
+
+Bytewise data is encoded as two nibbles going to two symbols/six signals with the most signififcant
+nibble coming first.
+

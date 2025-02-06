@@ -34,18 +34,20 @@ class Signal(Enum):
     def __repr__(self):
         return Signal.get_char(self)
 
-def _from_str(value: str):
-    return tuple(Signal(int(char)) for char in value)
-
 class Symbol():
     values: Tuple[Signal]
+
+    @staticmethod
+    def _from_numstr(value: str):
+        return tuple(Signal(int(char)) for char in value)
+
     def __init__(self, value: str | Tuple[Signal] | List[Signal]):
         if isinstance(value, list):
             self.values = tuple(iter(value))
         elif isinstance(value, tuple):
             self.values = value
         elif isinstance(value, str):
-            self.values = _from_str(value)
+            self.values = Symbol._from_numstr(value)
         else:
             raise ValueError("Input must be string or list of symbols")
 
@@ -62,3 +64,4 @@ class Symbol():
         if not isinstance(value, Symbol):
             raise ValueError("Can't compare against non-Symbols")
         return hash(self) == hash(value)
+
