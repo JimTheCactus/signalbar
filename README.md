@@ -32,6 +32,7 @@ an error in decoding has occured, there is a chance that invalid symbols can be 
 such, if an invalid symbol is encountered, the message can be known to be corrupted before that
 point in the decoding.
 
+```
 Trailing Character 0
     NRUN 000
     0001 001
@@ -118,6 +119,7 @@ Trailing Character 2
     CTRL 220
     CTRL 221
     NRUN 222 - If uninitialized: Flip Horizontal, Restart. Else: End of Sequence
+```
 
 ### Frames
 
@@ -128,7 +130,9 @@ start-of-frame sequence is correct.
 The choice of control symbols is to make it possible to decode signalbar in any orientation, and
 also in mirrored conditions.
 
+```
 Rightside up:  ▌▌▖<data> ▌▌▌
 Upside down:   ▌▌▌<data> ▘▌▌
 Mirrored:      ▌▌▌<data> ▖▌▌
 Rotate+Mirror: ▌▌▘<data> ▌▌▌
+```
