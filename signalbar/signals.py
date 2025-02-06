@@ -62,4 +62,3 @@ class Symbol():
         if not isinstance(value, Symbol):
             raise ValueError("Can't compare against non-Symbols")
         return hash(self) == hash(value)
-

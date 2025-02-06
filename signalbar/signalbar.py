@@ -56,7 +56,7 @@ def decode_bytes(msg: Iterable[Signal], last_value: Signal) \
             nibble1 = SIGNALBAR_VALUES[last_value.value][symbol1]
         except KeyError as exc:
             raise DecodingError(
-                f"Encountered invalid symbol {symbol2} with last signal {last_value}.",
+                f"Encountered invalid symbol {symbol1} with last signal {last_value}.",
             ) from exc
         try:
             symbol2 = Symbol((next(msg),next(msg),next(msg)))
