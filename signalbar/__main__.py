@@ -1,7 +1,11 @@
+"""
+A quick demonstration of signalbar
+"""
+
 import logging
 from sys import stderr
 
-from .signalbar import encode_frame, decode_frame, Signal
+from .signalbar import encode_frame, decode_frame #, Signal
 
 logging.basicConfig(level=logging.INFO, stream=stderr)
 

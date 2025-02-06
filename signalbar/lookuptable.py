@@ -1,3 +1,6 @@
+"""
+The mapping table for signalbar for data to symbols.
+"""
 from .signals import Symbol
 
 _lookup_raw = [
