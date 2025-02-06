@@ -4,7 +4,7 @@ signalbar
 
 A library for generating and decoding signalbar barcodes
 """
-from collections.abc import Generator, Iterable
+from typing import Iterable, Iterator
 import logging
 
 from .signals import Signal, Symbol
@@ -33,7 +33,7 @@ def encode_nibble(nibble: int, last_value: Signal) -> Symbol:
     logger.debug("%s, %s", nibble, last_value)
     return SIGNALBAR_SYMBOLS[last_value.value][nibble]
 
-def encode_bytes(msg: bytes, initial_last_value: Signal) -> Generator[Symbol, None, None]:
+def encode_bytes(msg: bytes, initial_last_value: Signal) -> Iterator[Symbol]:
     """
     Encodes a bytes structure into symbols
 
@@ -51,7 +51,7 @@ def encode_bytes(msg: bytes, initial_last_value: Signal) -> Generator[Symbol, No
         yield result
         last_value =  result.values[-1]
 
-def symbol_to_signals(value: Symbol) -> Generator[Signal, None, None]:
+def symbol_to_signals(value: Symbol) -> Iterator[Signal]:
     """
     Transforms a symbol into the individual signals that make it up
 
@@ -60,7 +60,7 @@ def symbol_to_signals(value: Symbol) -> Generator[Signal, None, None]:
     """
     yield from value.values
 
-def encode_frame(msg: bytes)  -> Generator[Signal, None, None]:
+def encode_frame(msg: bytes)  -> Iterator[Signal, None, None]:
     """
     Encodes a sequence of bytes into a sequence of signals
 
@@ -77,7 +77,7 @@ def encode_frame(msg: bytes)  -> Generator[Signal, None, None]:
     yield from SIGNALBAR_END.values
 
 def decode_bytes(msg: Iterable[Signal], last_value: Signal) \
-    -> Generator[int, None, None]:
+    -> Iterator[int]:
     """
     Decodes a sequence of signals into bytes
 
@@ -120,7 +120,7 @@ def decode_bytes(msg: Iterable[Signal], last_value: Signal) \
         yield data
         last_value = symbol2.values[-1]
 
-def decode_frame(msg: Iterable[Signal]) -> Generator[int]:
+def decode_frame(msg: Iterable[Signal]) -> Iterator[int]:
     """
     Locates the beginning of a frame and then decodes it into the contained message
 
