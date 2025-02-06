@@ -3,7 +3,7 @@ Definitions for individual trits and symbols
 """
 
 from enum import Enum
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 class Signal(Enum):
     """
@@ -71,7 +71,7 @@ class Symbol():
         """
         return tuple(Signal(int(char)) for char in value)
 
-    def __init__(self, value: str | Tuple[Signal] | List[Signal]):
+    def __init__(self, value: Union[str, Tuple[Signal], List[Signal]]):
         """
         Make a new symbol from a either a string-based numeric representation, or a Signal tuple or
         Signal list
