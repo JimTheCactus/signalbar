@@ -4,7 +4,7 @@ signalbar
 
 A library for generating and decoding signalbar barcodes
 """
-from typing import Iterable, Iterator
+from typing import Iterator, Tuple
 import logging
 
 from .signals import Signal, Symbol
@@ -76,7 +76,7 @@ def encode_frame(msg: bytes)  -> Iterator[Signal]:
     # Include frame footer
     yield from SIGNALBAR_END.values
 
-def decode_bytes(msg: Iterable[Signal], last_value: Signal) \
+def decode_bytes(msg: Iterator[Signal], last_value: Signal) \
     -> Iterator[int]:
     """
     Decodes a sequence of signals into bytes
@@ -88,7 +88,8 @@ def decode_bytes(msg: Iterable[Signal], last_value: Signal) \
     """
     while True:
         try:
-            symbol1 = Symbol((next(msg),next(msg),next(msg)))
+            values1: Tuple[Signal, ...] = (next(msg),next(msg),next(msg))
+            symbol1 = Symbol(values1)
         except StopIteration as exc:
             raise DecodingError("Byte contained the incorrect number of trits.") from exc
         logger.debug("%s", symbol1)
@@ -103,7 +104,8 @@ def decode_bytes(msg: Iterable[Signal], last_value: Signal) \
             ) from exc
         last_value = symbol1.values[-1]
         try:
-            symbol2 = Symbol((next(msg),next(msg),next(msg)))
+            values2: Tuple[Signal, ...] = (next(msg),next(msg),next(msg))
+            symbol2 = Symbol(values2)
         except StopIteration as exc:
             raise DecodingError("Byte contained the incorrect number of trits.") from exc
         logger.debug("%s", symbol2)
@@ -120,7 +122,7 @@ def decode_bytes(msg: Iterable[Signal], last_value: Signal) \
         yield data
         last_value = symbol2.values[-1]
 
-def decode_frame(msg: Iterable[Signal]) -> Iterator[int]:
+def decode_frame(msg: Iterator[Signal]) -> Iterator[int]:
     """
     Locates the beginning of a frame and then decodes it into the contained message
 

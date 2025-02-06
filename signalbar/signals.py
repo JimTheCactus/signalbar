@@ -58,7 +58,7 @@ class Symbol():
     """
     Holds the representation of a single symbol
     """
-    values: Tuple[Signal]
+    values: Tuple[Signal, ...]
 
     @staticmethod
     def _from_numstr(value: str):
@@ -71,7 +71,7 @@ class Symbol():
         """
         return tuple(Signal(int(char)) for char in value)
 
-    def __init__(self, value: Union[str, Tuple[Signal], List[Signal]]):
+    def __init__(self, value: Union[str, Tuple[Signal, ...], List[Signal]]):
         """
         Make a new symbol from a either a string-based numeric representation, or a Signal tuple or
         Signal list
