@@ -60,7 +60,7 @@ def symbol_to_signals(value: Symbol) -> Iterator[Signal]:
     """
     yield from value.values
 
-def encode_frame(msg: bytes)  -> Iterator[Signal, None, None]:
+def encode_frame(msg: bytes)  -> Iterator[Signal]:
     """
     Encodes a sequence of bytes into a sequence of signals
 
